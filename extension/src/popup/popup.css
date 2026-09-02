@@ -1,0 +1,75 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  width: 320px;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: #fff7f2;
+  color: #2a1a12;
+}
+
+.spendly-popup {
+  padding: 16px;
+}
+
+.spendly-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.spendly-logo {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.spendly-muted {
+  color: #8a6f63;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.spendly-product-card {
+  background: #ffffff;
+  border: 1px solid #f4dccb;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.spendly-product-card h2 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.spendly-price {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #d9622b;
+}
+
+.spendly-analyze-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ff8a5c, #f4b6a6);
+  color: #2a1a12;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.spendly-analyze-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.spendly-note {
+  margin-top: 10px;
+  margin-bottom: 0;
+}

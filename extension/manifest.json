@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Spendly — Smart Shopping Assistant",
+  "version": "0.1.0",
+  "description": "Should I buy this? Where should I buy it? Spendly analyzes your spending habits and compares prices from verified, permitted sources.",
+  "action": {
+    "default_popup": "src/popup/index.html",
+    "default_icon": {
+      "16": "public/icons/icon16.png",
+      "48": "public/icons/icon48.png",
+      "128": "public/icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "public/icons/icon16.png",
+    "48": "public/icons/icon48.png",
+    "128": "public/icons/icon128.png"
+  },
+  "options_page": "src/options/index.html",
+  "background": {
+    "service_worker": "src/background/service-worker.ts",
+    "type": "module"
+  },
+  "permissions": ["storage", "activeTab", "scripting"],
+  "optional_host_permissions": ["https://*/*"],
+  "content_scripts": [
+    {
+      "matches": ["http://localhost/*"],
+      "js": ["src/content/content.ts"],
+      "css": ["src/content/content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}
