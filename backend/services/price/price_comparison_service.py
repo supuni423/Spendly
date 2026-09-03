@@ -53,6 +53,7 @@ def compare_prices(
                 savings=savings,
                 savings_percentage=savings_pct,
                 shipping_cost_known=normalized.shipping_cost_known,
+                availability=normalized.availability,
                 product_url=source_product.product_url,
             )
         )

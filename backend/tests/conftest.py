@@ -7,6 +7,21 @@ from api.deps import get_db
 from app.config import get_settings
 from app.database import Base
 from app.main import app
+from services.llm_service import LLMNotConfiguredError
+
+
+@pytest.fixture(autouse=True)
+def no_live_llm_calls(monkeypatch):
+    """Tests must never depend on network access or a real API key — force
+    every analysis in the test suite through the deterministic fallback
+    path. The live LLM path is covered separately with a scripted fake
+    client in test_agent.py.
+    """
+
+    def _raise_not_configured():
+        raise LLMNotConfiguredError("disabled during tests")
+
+    monkeypatch.setattr("ai.agent.get_llm_client", _raise_not_configured)
 
 
 def _test_database_url() -> str:

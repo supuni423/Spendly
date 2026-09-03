@@ -33,6 +33,7 @@ class PriceComparisonMatch(BaseModel):
     savings: float | None
     savings_percentage: float | None
     shipping_cost_known: bool
+    availability: bool
     product_url: str | None
 
 

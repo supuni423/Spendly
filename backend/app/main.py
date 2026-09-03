@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from api.analysis import router as analysis_router
 from api.auth import router as auth_router
 from api.insights import router as insights_router
 from api.market_products import alternatives_router, router as market_products_router
@@ -23,6 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(analysis_router)
 app.include_router(auth_router)
 app.include_router(insights_router)
 app.include_router(market_products_router)
