@@ -22,6 +22,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(insights_router)
 app.include_router(products_router)
 app.include_router(purchases_router)
 app.include_router(saved_products_router)
