@@ -12,6 +12,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 from app.config import get_settings  # noqa: E402
 from app.database import Base  # noqa: E402
 from models.ai_analysis import AiAnalysis  # noqa: E402,F401
+from models.audit_log import AuditLog  # noqa: E402,F401
 from models.category import Category  # noqa: E402,F401
 from models.market_product import MarketProduct  # noqa: E402,F401
 from models.price_comparison import PriceComparison  # noqa: E402,F401

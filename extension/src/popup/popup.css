@@ -4,7 +4,7 @@
 
 body {
   margin: 0;
-  width: 320px;
+  width: 360px;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   background: #fff7f2;
   color: #2a1a12;
@@ -12,6 +12,8 @@ body {
 
 .spendly-popup {
   padding: 16px;
+  max-height: 560px;
+  overflow-y: auto;
 }
 
 .spendly-header {
@@ -72,4 +74,256 @@ body {
 .spendly-note {
   margin-top: 10px;
   margin-bottom: 0;
+}
+
+.spendly-secondary {
+  background: none;
+  border: 1px solid #f4dccb;
+}
+
+.spendly-error {
+  color: #c0392b;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+/* Loading */
+
+.spendly-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 0;
+  color: #8a6f63;
+  font-size: 13px;
+}
+
+.spendly-spinner {
+  width: 22px;
+  height: 22px;
+  border: 3px solid #f4dccb;
+  border-top-color: #ff8a5c;
+  border-radius: 50%;
+  animation: spendly-spin 0.8s linear infinite;
+}
+
+@keyframes spendly-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Auth form */
+
+.spendly-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #f4dccb;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.spendly-auth-form h2 {
+  margin: 0 0 4px;
+  font-size: 15px;
+}
+
+.spendly-auth-form input {
+  padding: 9px 10px;
+  border: 1px solid #f4dccb;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.spendly-auth-form button[type="submit"] {
+  margin-top: 4px;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ff8a5c, #f4b6a6);
+  color: #2a1a12;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.spendly-link-button {
+  background: none;
+  border: none;
+  color: #d9622b;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+/* Result sections */
+
+.spendly-result {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.spendly-section {
+  background: #ffffff;
+  border: 1px solid #f4dccb;
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.spendly-section h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #8a6f63;
+}
+
+/* Recommendation card */
+
+.spendly-rec-card {
+  border-radius: 12px;
+  padding: 14px;
+  border: 1px solid;
+}
+
+.spendly-rec-buy {
+  background: #eef8ee;
+  border-color: #bfe3bf;
+}
+
+.spendly-rec-consider {
+  background: #fff6e0;
+  border-color: #f0d98c;
+}
+
+.spendly-rec-wait {
+  background: #fdeceb;
+  border-color: #f0b8b3;
+}
+
+.spendly-rec-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.spendly-rec-badge {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.spendly-rec-confidence {
+  font-size: 12px;
+  color: #8a6f63;
+}
+
+.spendly-rec-summary {
+  margin: 0 0 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.spendly-rec-reasoning {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Spending summary */
+
+.spendly-spending-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 3px 0;
+}
+
+.spendly-budget-note {
+  margin: 8px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.spendly-budget-note.spendly-over {
+  color: #c0392b;
+}
+
+.spendly-budget-note.spendly-under {
+  color: #2e7d32;
+}
+
+/* Similar products */
+
+.spendly-similar-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.spendly-similar-list li {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+}
+
+/* Price comparison */
+
+.spendly-price-group {
+  margin-bottom: 10px;
+}
+
+.spendly-price-group:last-child {
+  margin-bottom: 0;
+}
+
+.spendly-price-group-label {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b5147;
+}
+
+.spendly-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  padding: 4px 0;
+  border-top: 1px solid #f7ede4;
+}
+
+.spendly-price-row:first-of-type {
+  border-top: none;
+}
+
+.spendly-store {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.spendly-price-value {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.spendly-savings {
+  font-size: 11px;
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.spendly-unavailable {
+  color: #c0392b;
+  font-size: 11px;
 }

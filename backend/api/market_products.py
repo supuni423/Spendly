@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from api.deps import get_current_user, get_db
@@ -18,8 +18,8 @@ def search(
     query: str | None = None,
     category: str | None = None,
     brand: str | None = None,
-    limit: int = 20,
-    offset: int = 0,
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
     db: Session = Depends(get_db),
     _current_user: User = Depends(get_current_user),
 ) -> list[MarketProductRead]:

@@ -7,7 +7,20 @@ from api.deps import get_db
 from app.config import get_settings
 from app.database import Base
 from app.main import app
+from core.rate_limit import _buckets as rate_limit_buckets
 from services.llm_service import LLMNotConfiguredError
+
+
+@pytest.fixture(autouse=True)
+def reset_rate_limits():
+    """The rate limiter's bucket store is module-level in-memory state, so
+    without a reset it accumulates across every test in the run (most tests
+    hit /api/auth/register at least once) and starts rejecting requests with
+    429 long before any test actually means to exercise rate limiting.
+    """
+    rate_limit_buckets.clear()
+    yield
+    rate_limit_buckets.clear()
 
 
 @pytest.fixture(autouse=True)
