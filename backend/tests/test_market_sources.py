@@ -1,47 +1,60 @@
-from sources.mock.mock_source import MockSource
+from sources.mock.mock_source import (
+    ALL_MOCK_STORES,
+    QuickBuySource,
+    StyleHubSource,
+    TrendCartSource,
+)
 
-# --- MockSource itself ---
+# --- Individual mock stores ---
+
+
+def test_each_mock_store_has_a_distinct_name():
+    names = [store.name for store in ALL_MOCK_STORES]
+    assert len(names) == len(set(names)) == 4
 
 
 def test_search_products_finds_relevant_catalog_entries():
-    source = MockSource()
-    results = source.search_products("Black Floral Dress")
+    results = StyleHubSource.search_products("Black Floral Dress")
     assert any(r.name == "Black Floral Dress" for r in results)
 
 
 def test_search_products_with_no_overlap_returns_empty():
-    source = MockSource()
-    results = source.search_products("Completely Unrelated Query Term")
+    results = StyleHubSource.search_products("Completely Unrelated Query Term")
     assert results == []
 
 
 def test_get_product_by_id_returns_normalized_shape():
-    source = MockSource()
-    product = source.get_product("MOCK-001")
+    product = StyleHubSource.get_product("SH-001")
     assert product is not None
-    assert product.source == "mock"
+    assert product.source == "stylehub"
     assert product.base_price > 0
     assert product.currency == "LKR"
 
 
 def test_get_unknown_product_returns_none():
-    source = MockSource()
-    assert source.get_product("DOES-NOT-EXIST") is None
+    assert StyleHubSource.get_product("DOES-NOT-EXIST") is None
 
 
 def test_get_current_price_matches_catalog():
-    source = MockSource()
-    assert source.get_current_price("MOCK-001") == 3900.0
-    assert source.get_current_price("DOES-NOT-EXIST") is None
+    assert StyleHubSource.get_current_price("SH-001") == 4100.0  # base price, before discount
+    assert StyleHubSource.get_current_price("DOES-NOT-EXIST") is None
 
 
 def test_check_availability():
-    source = MockSource()
-    assert source.check_availability("MOCK-001") is True
-    assert source.check_availability("DOES-NOT-EXIST") is False
+    assert StyleHubSource.check_availability("SH-001") is True
+    assert StyleHubSource.check_availability("DOES-NOT-EXIST") is False
 
 
-# --- API: price comparison + market products, end to end against MockSource ---
+def test_different_stores_price_the_same_sku_differently():
+    trendcart_item = TrendCartSource.get_product("TC-001")
+    stylehub_item = StyleHubSource.get_product("SH-001")
+    quickbuy_item = QuickBuySource.get_product("QB-001")
+
+    assert trendcart_item.sku == stylehub_item.sku == quickbuy_item.sku == "BFD-001"
+    assert trendcart_item.base_price != stylehub_item.base_price != quickbuy_item.base_price
+
+
+# --- API: price comparison + market products, end to end against the mock stores ---
 
 
 def _auth_headers(client, email="market@example.com"):
@@ -53,7 +66,7 @@ def _auth_headers(client, email="market@example.com"):
     return {"Authorization": f"Bearer {token}"}
 
 
-def test_price_comparison_endpoint_finds_cheaper_mock_listing(client):
+def test_price_comparison_aggregates_across_multiple_stores(client):
     headers = _auth_headers(client)
 
     response = client.post(
@@ -71,9 +84,14 @@ def test_price_comparison_endpoint_finds_cheaper_mock_listing(client):
 
     assert response.status_code == 200
     body = response.json()
-    assert body["lowest_price"] == 3900.0
+
+    sources_seen = {m["source"] for m in body["matches"]}
+    assert {"trendcart", "stylehub", "quickbuy"}.issubset(sources_seen)
+
+    assert body["lowest_price"] == 3900.0  # stylehub, after its discount
     assert body["potential_savings"] == 600.0
     assert any(m["match_type"] == "EXACT_MATCH" for m in body["matches"])
+    assert any(m["match_type"] == "SIMILAR_PRODUCT" for m in body["matches"])  # blue variant
 
 
 def test_price_comparison_populates_market_products_catalog(client):

@@ -1,11 +1,11 @@
 from schemas.price_comparison import CurrentProductInput
 from sources.base.product_source import ProductSource
 from sources.base.source_result import SourceProduct
-from sources.mock.mock_source import MockSource
+from sources.mock.mock_source import ALL_MOCK_STORES
 
 # Every permitted source gets registered here (Section 8). Adding one never
 # requires touching the matching engine, comparison service, or API layer.
-REGISTERED_SOURCES: list[ProductSource] = [MockSource()]
+REGISTERED_SOURCES: list[ProductSource] = list(ALL_MOCK_STORES)
 
 
 def discover_candidates(
