@@ -12,6 +12,9 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 from app.config import get_settings  # noqa: E402
 from app.database import Base  # noqa: E402
 from models.category import Category  # noqa: E402,F401
+from models.market_product import MarketProduct  # noqa: E402,F401
+from models.price_comparison import PriceComparison  # noqa: E402,F401
+from models.price_history import PriceHistory  # noqa: E402,F401
 from models.product import Product  # noqa: E402,F401
 from models.purchase import Purchase  # noqa: E402,F401
 from models.saved_product import SavedProduct  # noqa: E402,F401
