@@ -1,39 +1,31 @@
 import { detectProduct } from "./productDetector";
 import type { DetectedProduct } from "@/types/product";
 
-let cachedProduct: DetectedProduct | null = null;
+export {};
 
-function injectAnalyzeButton(product: DetectedProduct): void {
-  if (document.getElementById("spendly-analyze-button")) return;
+// Injected on demand (via chrome.scripting.executeScript) each time the
+// popup opens on this tab. The injected context persists per-tab until
+// navigation, so a repeat popup-open on the same page re-injects the same
+// script — guard against re-registering the listener below.
+if (!(window as unknown as { __spendlyContentLoaded?: boolean }).__spendlyContentLoaded) {
+  (window as unknown as { __spendlyContentLoaded?: boolean }).__spendlyContentLoaded = true;
 
-  const button = document.createElement("button");
-  button.id = "spendly-analyze-button";
-  button.className = "spendly-analyze-button";
-  button.type = "button";
-  button.textContent = "🧠 Analyze with Spendly";
-  button.addEventListener("click", () => {
-    chrome.runtime.sendMessage({ type: "SPENDLY_ANALYZE_REQUEST", product });
+  let cachedProduct: DetectedProduct | null = null;
+
+  function runDetection(): void {
+    cachedProduct = detectProduct();
+  }
+
+  chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+    if (message?.type === "SPENDLY_GET_DETECTED_PRODUCT") {
+      sendResponse({ product: cachedProduct });
+    }
+    return true;
   });
 
-  document.body.appendChild(button);
-}
-
-function runDetection(): void {
-  cachedProduct = detectProduct();
-  if (cachedProduct) {
-    injectAnalyzeButton(cachedProduct);
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    runDetection();
+  } else {
+    window.addEventListener("DOMContentLoaded", runDetection);
   }
-}
-
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  if (message?.type === "SPENDLY_GET_DETECTED_PRODUCT") {
-    sendResponse({ product: cachedProduct });
-  }
-  return true;
-});
-
-if (document.readyState === "complete" || document.readyState === "interactive") {
-  runDetection();
-} else {
-  window.addEventListener("DOMContentLoaded", runDetection);
 }

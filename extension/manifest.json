@@ -21,14 +21,13 @@
     "service_worker": "src/background/service-worker.ts",
     "type": "module"
   },
-  "permissions": ["storage", "activeTab"],
+  "permissions": ["storage", "activeTab", "scripting"],
   "host_permissions": ["http://localhost:8001/*"],
-  "content_scripts": [
+  "web_accessible_resources": [
     {
-      "matches": ["http://localhost/*"],
-      "js": ["src/content/content.ts"],
-      "css": ["src/content/content.css"],
-      "run_at": "document_idle"
+      "resources": ["<dynamic_resource>"],
+      "matches": ["http://*/*", "https://*/*"],
+      "use_dynamic_url": true
     }
   ]
 }

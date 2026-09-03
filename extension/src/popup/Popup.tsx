@@ -11,6 +11,7 @@ import { RecommendationCard } from "@/components/RecommendationCard";
 import { SpendingSummary } from "@/components/SpendingSummary";
 import { SimilarProducts } from "@/components/SimilarProducts";
 import { PriceComparisonCard } from "@/components/PriceComparisonCard";
+import contentScriptPath from "../content/content.ts?script";
 import "./popup.css";
 
 type PopupState =
@@ -18,22 +19,52 @@ type PopupState =
   | { status: "needs-auth" }
   | { status: "checking-product" }
   | { status: "no-product" }
+  | { status: "unsupported-page" }
   | { status: "detected"; product: DetectedProduct }
   | { status: "analyzing"; product: DetectedProduct }
   | { status: "result"; product: DetectedProduct; result: AnalysisResult }
   | { status: "error"; product: DetectedProduct; message: string };
 
-async function getActiveTabProduct(): Promise<DetectedProduct | null> {
+type DetectionOutcome =
+  | { status: "detected"; product: DetectedProduct }
+  | { status: "no-product" }
+  | { status: "unsupported-page" };
+
+async function requestDetectedProduct(tabId: number): Promise<DetectedProduct | null> {
+  const response = await chrome.tabs.sendMessage(tabId, {
+    type: "SPENDLY_GET_DETECTED_PRODUCT",
+  });
+  return response?.product ?? null;
+}
+
+async function getActiveTabProduct(): Promise<DetectionOutcome> {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!tab?.id) return null;
+  if (!tab?.id) return { status: "unsupported-page" };
+  const tabId = tab.id;
+
+  // The content script may already be alive in this tab from a previous
+  // popup-open on the same page — probe first so we don't re-inject and
+  // stack a second listener.
+  try {
+    const product = await requestDetectedProduct(tabId);
+    return product ? { status: "detected", product } : { status: "no-product" };
+  } catch {
+    // No content script listening yet — fall through and inject one.
+  }
 
   try {
-    const response = await chrome.tabs.sendMessage(tab.id, {
-      type: "SPENDLY_GET_DETECTED_PRODUCT",
-    });
-    return response?.product ?? null;
+    await chrome.scripting.executeScript({ target: { tabId }, files: [contentScriptPath] });
   } catch {
-    return null;
+    // chrome:// pages, the Web Store, the PDF viewer, etc. — activeTab
+    // scripting isn't allowed there.
+    return { status: "unsupported-page" };
+  }
+
+  try {
+    const product = await requestDetectedProduct(tabId);
+    return product ? { status: "detected", product } : { status: "no-product" };
+  } catch {
+    return { status: "no-product" };
   }
 }
 
@@ -42,8 +73,7 @@ export function Popup() {
 
   async function detectProduct() {
     setState({ status: "checking-product" });
-    const product = await getActiveTabProduct();
-    setState(product ? { status: "detected", product } : { status: "no-product" });
+    setState(await getActiveTabProduct());
   }
 
   useEffect(() => {
@@ -87,6 +117,12 @@ export function Popup() {
       {state.status === "no-product" && (
         <p className="spendly-muted">
           No product detected on this page. Open a product page and reopen Spendly.
+        </p>
+      )}
+
+      {state.status === "unsupported-page" && (
+        <p className="spendly-muted">
+          Spendly can't run on this page. Open a shopping site and reopen Spendly.
         </p>
       )}
 

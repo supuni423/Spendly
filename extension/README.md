@@ -18,11 +18,12 @@ unpacked** → select `extension/dist` (run `npm run build` once first so
 
 ## Try it locally
 
-The content script only runs on `http://localhost/*` for now (see
-`manifest.json` and `src/content/supportedSites.ts` for why real sites
-aren't wildcarded in). Serve any static HTML page with Open Graph
-`product` tags or schema.org `Product` JSON-LD on localhost and the
-"Analyze with Spendly" button should appear.
+The content script is injected on demand (via the `activeTab` permission)
+each time you open the popup — it never runs automatically on page load,
+and there's no per-domain allowlist in `manifest.json`. Open any page with
+Open Graph `product` tags or schema.org `Product` JSON-LD (the bundled
+`test-page/index.html`, or a real product page) and open the popup;
+Spendly reads that page's product on that gesture.
 
 ## Icons
 
