@@ -1,0 +1,104 @@
+body {
+  font-family: system-ui, sans-serif;
+  max-width: 720px;
+  margin: 48px auto;
+  padding: 0 16px;
+  color: #222;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 24px;
+  color: #555;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.product-page .price {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.product-page .muted {
+  color: #666;
+}
+
+.product-page .product-thumb {
+  height: 200px;
+  font-size: 72px;
+  margin-bottom: 16px;
+}
+
+.category-tag {
+  display: inline-block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #555;
+  background: #f0f0f0;
+  padding: 2px 9px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+
+.product-thumb {
+  height: 100px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+/* Per-category and per-store thumbnail gradients are auto-generated —
+   see generate-test-pages.mjs's output, test-page/generated-thumbs.css. */
+
+.store-header {
+  margin-bottom: 32px;
+}
+
+.store-header h1 {
+  margin-bottom: 4px;
+}
+
+.store-header p {
+  color: #666;
+  margin-top: 0;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.product-card {
+  display: block;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.product-card:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.product-card h2 {
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+
+.product-card p {
+  margin: 0;
+  color: #444;
+  font-weight: 600;
+}

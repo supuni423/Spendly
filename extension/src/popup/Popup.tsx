@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { DetectedProduct } from "@/types/product";
 import type { AnalysisResult } from "@/types/analysis";
-import { getAuthToken } from "@/storage/chromeStorage";
+import { clearAuthToken, getAuthToken } from "@/storage/chromeStorage";
 import { analyzeProduct } from "@/api/analysisApi";
 import { ApiError } from "@/api/apiClient";
 import { formatPrice } from "@/utils/priceFormatting";
@@ -92,11 +92,14 @@ export function Popup() {
       const result = await analyzeProduct(product);
       setState({ status: "result", product, result });
     } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        await clearAuthToken();
+        setState({ status: "needs-auth" });
+        return;
+      }
       const message =
         err instanceof ApiError
-          ? err.status === 401
-            ? "Session expired — please log in again."
-            : err.message
+          ? err.message
           : "Couldn't reach Spendly. Check that the backend is running.";
       setState({ status: "error", product, message });
     }

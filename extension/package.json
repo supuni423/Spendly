@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "eslint src adapters --ext .ts,.tsx"
+    "lint": "eslint src adapters --ext .ts,.tsx",
+    "serve:test-page": "node scripts/serve-test-page.mjs",
+    "generate:test-pages": "node scripts/generate-test-pages.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

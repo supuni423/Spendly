@@ -1,5 +1,7 @@
+import json
 import re
 from datetime import datetime, timezone
+from pathlib import Path
 
 from sources.base.product_source import ProductSource
 from sources.base.source_result import SourceProduct
@@ -109,90 +111,50 @@ class MockStoreSource(ProductSource):
         return self.get_product(source_product_id) is not None
 
 
-# Four independent synthetic stores. The same "Black Floral Dress" (SKU
-# BFD-001) is deliberately priced differently at each fashion store so the
-# price-comparison pipeline has real spread to demonstrate against.
+# Five independent synthetic stores (2 clothing, 3 electronics), all
+# defined in catalog.json — the single source of truth also read by
+# extension/scripts/generate-test-pages.mjs to build the matching
+# browsable demo pages, so the storefronts you click through and the
+# prices this pipeline actually computes can never drift apart. Every
+# clothing product is listed at both clothing stores, and every
+# electronics product at all three electronics stores, at different
+# prices, so every demo product has genuine cross-store spread.
 
-TRENDCART_CATALOG = [
-    _item(
-        "TC-001",
-        "Black Floral Dress",
-        brand="Example",
-        category="Dresses",
-        sku="BFD-001",
-        attributes={"color": "black", "size": "M"},
-        base_price=4500.0,
-        shipping_cost=300.0,
-    ),
-]
+_CATALOG_PATH = Path(__file__).parent / "catalog.json"
+_catalog = json.loads(_CATALOG_PATH.read_text(encoding="utf-8"))
 
-STYLEHUB_CATALOG = [
-    _item(
-        "SH-001",
-        "Black Floral Dress",
-        brand="Example",
-        category="Dresses",
-        sku="BFD-001",
-        attributes={"color": "black", "size": "M"},
-        base_price=4100.0,
-        discount=200.0,  # final price 3900
-        shipping_cost=250.0,
-    ),
-    _item(
-        "SH-002",
-        "Blue Floral Dress",
-        brand="Example",
-        category="Dresses",
-        sku="BFD-002",
-        attributes={"color": "blue", "size": "M"},
-        base_price=3800.0,
-        shipping_cost=250.0,
-    ),
-]
 
-QUICKBUY_CATALOG = [
-    _item(
-        "QB-001",
-        "Black Floral Dress",
-        brand="Example",
-        category="Dresses",
-        sku="BFD-001",
-        attributes={"color": "black", "size": "M"},
-        base_price=4200.0,
-        shipping_cost=None,  # shipping unknown from this listing
-    ),
-]
+def _build_store_catalog(store_key: str) -> list[dict]:
+    shipping_cost = _catalog["stores"][store_key]["shipping_cost"]
+    rows = []
+    for product in _catalog["products"]:
+        price = product["prices"].get(store_key)
+        if price is None:
+            continue
+        rows.append(
+            _item(
+                f"{store_key}-{product['sku']}".upper(),
+                product["name"],
+                brand=product.get("brand"),
+                category=product.get("category"),
+                sku=product["sku"],
+                attributes=product.get("attributes"),
+                base_price=float(price),
+                shipping_cost=shipping_cost,
+            )
+        )
+    return rows
 
-TECHMART_CATALOG = [
-    _item(
-        "TM-001",
-        "Samsung Galaxy S25 256 GB Black",
-        brand="Samsung",
-        category="Phones",
-        model_number="SM-S931B",
-        attributes={"storage": "256GB", "color": "black"},
-        base_price=289900.0,
-        discount=5000.0,
-        shipping_cost=0.0,
-    ),
-    _item(
-        "TM-002",
-        "Samsung Galaxy S25 Case",
-        brand="Samsung",
-        category="Phone Accessories",
-        base_price=3500.0,
-        shipping_cost=500.0,
-    ),
-]
 
-TrendCartSource = MockStoreSource("trendcart", TRENDCART_CATALOG)
-StyleHubSource = MockStoreSource("stylehub", STYLEHUB_CATALOG)
-QuickBuySource = MockStoreSource("quickbuy", QUICKBUY_CATALOG)
-TechMartSource = MockStoreSource("techmart", TECHMART_CATALOG)
+_STORE_INSTANCES: dict[str, MockStoreSource] = {
+    store_key: MockStoreSource(store_key, _build_store_catalog(store_key))
+    for store_key in _catalog["stores"]
+}
 
-ALL_MOCK_STORES: list[MockStoreSource] = [
-    TrendCartSource,
-    StyleHubSource,
-    QuickBuySource,
-    TechMartSource,
-]
+StyleHubSource = _STORE_INSTANCES["stylehub"]
+TrendCartSource = _STORE_INSTANCES["trendcart"]
+TechMartSource = _STORE_INSTANCES["techmart"]
+QuickBuySource = _STORE_INSTANCES["quickbuy"]
+ByteBazaarSource = _STORE_INSTANCES["bytebazaar"]
+
+ALL_MOCK_STORES: list[MockStoreSource] = list(_STORE_INSTANCES.values())

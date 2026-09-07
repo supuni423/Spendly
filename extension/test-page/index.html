@@ -2,41 +2,41 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Black Floral Dress — Store A</title>
-    <meta property="og:type" content="product" />
-    <meta property="og:title" content="Black Floral Dress" />
-    <meta property="og:price:amount" content="4500" />
-    <meta property="og:price:currency" content="LKR" />
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Product",
-        "name": "Black Floral Dress",
-        "brand": { "@type": "Brand", "name": "Example" },
-        "category": "Dresses",
-        "sku": "BFD-001",
-        "offers": {
-          "@type": "Offer",
-          "price": "4500",
-          "priceCurrency": "LKR"
-        }
-      }
-    </script>
-    <style>
-      body {
-        font-family: system-ui, sans-serif;
-        max-width: 480px;
-        margin: 60px auto;
-      }
-      img {
-        width: 100%;
-        border-radius: 8px;
-      }
-    </style>
+    <title>Market Square</title>
+    <link rel="stylesheet" href="store.css" />
+    <link rel="stylesheet" href="generated-thumbs.css" />
   </head>
   <body>
-    <h1>Black Floral Dress</h1>
-    <p>Rs. 4,500</p>
-    <p>A simple test product page for trying out the Spendly content script locally.</p>
+    <header class="store-header">
+      <h1>Market Square</h1>
+      <p>Five stores under one roof. Pick one to start browsing.</p>
+    </header>
+    <div class="product-grid">
+      <a class="product-card" href="stylehub/index.html">
+        <div class="product-thumb thumb-store-stylehub">👗</div>
+        <h2>StyleHub</h2>
+        <p>Fashion boutique</p>
+      </a>
+      <a class="product-card" href="trendcart/index.html">
+        <div class="product-thumb thumb-store-trendcart">🛍️</div>
+        <h2>TrendCart</h2>
+        <p>Everyday clothing marketplace</p>
+      </a>
+      <a class="product-card" href="techmart/index.html">
+        <div class="product-thumb thumb-store-techmart">💻</div>
+        <h2>TechMart</h2>
+        <p>Electronics specialist</p>
+      </a>
+      <a class="product-card" href="quickbuy/index.html">
+        <div class="product-thumb thumb-store-quickbuy">⚡</div>
+        <h2>QuickBuy</h2>
+        <p>Fast electronics marketplace</p>
+      </a>
+      <a class="product-card" href="bytebazaar/index.html">
+        <div class="product-thumb thumb-store-bytebazaar">🔌</div>
+        <h2>ByteBazaar</h2>
+        <p>Gadgets & gear</p>
+      </a>
+    </div>
   </body>
 </html>
