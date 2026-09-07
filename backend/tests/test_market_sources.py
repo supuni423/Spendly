@@ -114,6 +114,31 @@ def test_price_comparison_aggregates_across_multiple_stores(client):
     assert any(m["match_type"] == "SIMILAR_PRODUCT" for m in body["matches"])  # blue variant
 
 
+def test_price_comparison_skips_savings_on_currency_mismatch(client):
+    headers = _auth_headers(client)
+
+    response = client.post(
+        "/api/price-comparison",
+        headers=headers,
+        json={
+            "product_name": "Black Floral Dress",
+            "brand": "Example",
+            "price": 4500,
+            "currency": "USD",  # mock catalog is LKR — deliberately mismatched
+            "category": "Dresses",
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+
+    assert len(body["matches"]) > 0  # still finds and reports the matches...
+    assert all(m["savings"] is None for m in body["matches"])  # ...just no savings claim
+    assert all(m["savings_percentage"] is None for m in body["matches"])
+    assert body["lowest_price"] is None
+    assert body["potential_savings"] is None
+
+
 def test_price_comparison_populates_market_products_catalog(client):
     headers = _auth_headers(client)
 

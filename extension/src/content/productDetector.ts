@@ -1,8 +1,10 @@
 import { AdapterRegistry } from "@adapters/base/AdapterRegistry";
+import { AmazonAdapter } from "@adapters/supported-site/AmazonAdapter";
 import { GenericProductAdapter } from "@adapters/generic/GenericProductAdapter";
 import type { DetectedProduct } from "@/types/product";
 
 const registry = new AdapterRegistry();
+registry.register(new AmazonAdapter());
 registry.register(new GenericProductAdapter());
 
 export function detectProduct(): DetectedProduct | null {

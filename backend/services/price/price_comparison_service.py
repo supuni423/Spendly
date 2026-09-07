@@ -37,9 +37,17 @@ def compare_prices(
         # for a "you can buy this exact item cheaper elsewhere" savings
         # claim; a merely-similar product's price isn't comparable in
         # that sense, so it's surfaced with match info but no savings.
+        # A currency mismatch (e.g. a real site showing a non-USD price)
+        # is guarded the same way — the raw price/currency still shows
+        # per store, but we never subtract across two different
+        # currencies and present it as a real number.
         normalized = normalize_price(source_product)
         savings = savings_pct = None
-        if match.match_type in MATCHABLE_TYPES and normalized.availability:
+        if (
+            match.match_type in MATCHABLE_TYPES
+            and normalized.availability
+            and candidate.currency == normalized.currency
+        ):
             savings, savings_pct = calculate_savings(candidate.price, normalized.final_price)
 
         matches.append(

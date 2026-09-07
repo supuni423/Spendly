@@ -71,6 +71,30 @@ body {
   margin-top: 0;
 }
 
+.store-search {
+  margin-bottom: 16px;
+}
+
+.store-search input {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.store-search input:focus {
+  outline: none;
+  border-color: #999;
+}
+
+.search-empty {
+  color: #666;
+  margin-bottom: 16px;
+}
+
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));

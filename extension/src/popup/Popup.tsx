@@ -3,6 +3,7 @@ import type { DetectedProduct } from "@/types/product";
 import type { AnalysisResult } from "@/types/analysis";
 import { clearAuthToken, getAuthToken } from "@/storage/chromeStorage";
 import { analyzeProduct } from "@/api/analysisApi";
+import { logPurchase } from "@/api/purchasesApi";
 import { ApiError } from "@/api/apiClient";
 import { formatPrice } from "@/utils/priceFormatting";
 import { AuthForm } from "@/components/AuthForm";
@@ -68,8 +69,11 @@ async function getActiveTabProduct(): Promise<DetectionOutcome> {
   }
 }
 
+type LogPurchaseState = "idle" | "logging" | "logged" | "error";
+
 export function Popup() {
   const [state, setState] = useState<PopupState>({ status: "checking-auth" });
+  const [logState, setLogState] = useState<LogPurchaseState>("idle");
 
   async function detectProduct() {
     setState({ status: "checking-product" });
@@ -88,6 +92,7 @@ export function Popup() {
 
   async function handleAnalyze(product: DetectedProduct) {
     setState({ status: "analyzing", product });
+    setLogState("idle");
     try {
       const result = await analyzeProduct(product);
       setState({ status: "result", product, result });
@@ -102,6 +107,16 @@ export function Popup() {
           ? err.message
           : "Couldn't reach Spendly. Check that the backend is running.";
       setState({ status: "error", product, message });
+    }
+  }
+
+  async function handleLogPurchase(product: DetectedProduct) {
+    setLogState("logging");
+    try {
+      await logPurchase(product, product.price ?? 0);
+      setLogState("logged");
+    } catch {
+      setLogState("error");
     }
   }
 
@@ -164,6 +179,22 @@ export function Popup() {
           <SpendingSummary budgetImpact={state.result.personal_insights.budget_impact} />
           <SimilarProducts purchases={state.result.personal_insights.similar_purchases} />
           <PriceComparisonCard comparison={state.result.price_comparison} />
+
+          {logState === "logged" ? (
+            <p className="spendly-success">Added to your purchase history ✓</p>
+          ) : (
+            <button
+              className="spendly-analyze-btn"
+              disabled={logState === "logging"}
+              onClick={() => handleLogPurchase(state.product)}
+            >
+              {logState === "logging" ? "Logging…" : "I bought this — log it"}
+            </button>
+          )}
+          {logState === "error" && (
+            <p className="spendly-error">Couldn't log the purchase. Try again.</p>
+          )}
+
           <button
             className="spendly-analyze-btn spendly-secondary"
             onClick={() => setState({ status: "detected", product: state.product })}

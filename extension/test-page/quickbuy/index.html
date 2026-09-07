@@ -12,7 +12,11 @@
       <h1>QuickBuy</h1>
       <p>Fast electronics marketplace.</p>
     </header>
-    <div class="product-grid">
+    <div class="store-search">
+      <input type="search" id="product-search" placeholder="Search QuickBuy…" autocomplete="off" />
+    </div>
+    <p id="search-empty" class="search-empty" hidden>No products match your search.</p>
+    <div class="product-grid" id="product-grid">
       <a class="product-card" href="products/canon-eos-m50.html">
         <div class="product-thumb thumb-cameras">📷</div>
         <p class="category-tag">Cameras</p>
@@ -134,5 +138,24 @@
         <p>Rs. 172,500</p>
       </a>
     </div>
+    <script>
+      (function () {
+        var input = document.getElementById("product-search");
+        var cards = Array.prototype.slice.call(
+          document.querySelectorAll("#product-grid .product-card")
+        );
+        var empty = document.getElementById("search-empty");
+        input.addEventListener("input", function () {
+          var query = input.value.trim().toLowerCase();
+          var visible = 0;
+          cards.forEach(function (card) {
+            var matches = !query || card.textContent.toLowerCase().indexOf(query) !== -1;
+            card.hidden = !matches;
+            if (matches) visible++;
+          });
+          empty.hidden = visible > 0;
+        });
+      })();
+    </script>
   </body>
 </html>

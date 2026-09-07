@@ -155,9 +155,32 @@ function storeIndexHtml(storeKey, store) {
       <h1>${store.label}</h1>
       <p>${store.tagline}.</p>
     </header>
-    <div class="product-grid">
+    <div class="store-search">
+      <input type="search" id="product-search" placeholder="Search ${store.label}…" autocomplete="off" />
+    </div>
+    <p id="search-empty" class="search-empty" hidden>No products match your search.</p>
+    <div class="product-grid" id="product-grid">
 ${cards}
     </div>
+    <script>
+      (function () {
+        var input = document.getElementById("product-search");
+        var cards = Array.prototype.slice.call(
+          document.querySelectorAll("#product-grid .product-card")
+        );
+        var empty = document.getElementById("search-empty");
+        input.addEventListener("input", function () {
+          var query = input.value.trim().toLowerCase();
+          var visible = 0;
+          cards.forEach(function (card) {
+            var matches = !query || card.textContent.toLowerCase().indexOf(query) !== -1;
+            card.hidden = !matches;
+            if (matches) visible++;
+          });
+          empty.hidden = visible > 0;
+        });
+      })();
+    </script>
   </body>
 </html>
 `;

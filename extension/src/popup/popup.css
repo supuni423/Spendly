@@ -87,6 +87,14 @@ body {
   margin-top: 8px;
 }
 
+.spendly-success {
+  color: #1a7f37;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 12px;
+  text-align: center;
+}
+
 /* Loading */
 
 .spendly-loading {
