@@ -1,8 +1,10 @@
 import { getAuthToken } from "@/storage/chromeStorage";
 
-// Backend runs locally in development (Section 10's REST API). Move this to
-// options/env-based config before shipping past localhost.
-export const API_BASE_URL = "http://localhost:8001";
+// Defaults to localhost for development. For a deployed backend, build with
+// VITE_API_BASE_URL=https://your-deployed-url — vite.config.ts reads the same
+// variable to set manifest.json's host_permissions, so the two never drift
+// apart (see backend/README.md's Deploy section).
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8001";
 
 export class ApiError extends Error {
   constructor(

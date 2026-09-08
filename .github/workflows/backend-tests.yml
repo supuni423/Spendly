@@ -1,0 +1,46 @@
+name: Backend Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: spendly
+          POSTGRES_PASSWORD: spendly
+          POSTGRES_DB: spendly
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        working-directory: backend
+        run: pip install -r requirements.txt
+
+      - name: Create test database
+        run: PGPASSWORD=spendly psql -h localhost -U spendly -d spendly -c "CREATE DATABASE spendly_test;"
+
+      - name: Run tests
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql+psycopg://spendly:spendly@localhost:5432/spendly
+          JWT_SECRET_KEY: ci-test-secret-key-not-for-production
+        run: pytest -q

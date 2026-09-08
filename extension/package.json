@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "lint": "eslint src adapters --ext .ts,.tsx",
     "serve:test-page": "node scripts/serve-test-page.mjs",
-    "generate:test-pages": "node scripts/generate-test-pages.mjs"
+    "generate:test-pages": "node scripts/generate-test-pages.mjs",
+    "generate:icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -25,6 +26,7 @@
     "@vitejs/plugin-react": "^4.3.1",
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.2",
+    "sharp": "^0.35.4",
     "typescript": "^5.5.3",
     "vite": "^5.3.4"
   }
