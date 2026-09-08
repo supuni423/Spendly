@@ -1,0 +1,201 @@
+<title>Spendly Architecture</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1c1918;
+    --panel: #242020;
+    --ink: #ede7dd;
+    --ink-dim: #a79e92;
+    --hairline: #3a3532;
+    --deterministic: #e8823c;
+    --deterministic-dim: #6b4a2c;
+    --generative: #9b9ff0;
+    --generative-dim: #4a4a78;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Public Sans", system-ui, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 56px 24px;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 1180px;
+  }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--deterministic);
+    margin: 0 0 10px;
+  }
+
+  h1 {
+    font-family: "Sora", system-ui, sans-serif;
+    font-weight: 700;
+    font-size: clamp(22px, 3vw, 30px);
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    margin: 0 0 28px;
+    text-wrap: balance;
+    max-width: 46ch;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--generative);
+  }
+
+  figure {
+    margin: 0;
+  }
+
+  .diagram-scroll {
+    overflow-x: auto;
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-width: 720px;
+  }
+
+  .node-label {
+    font-family: "Sora", system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    fill: var(--ink);
+  }
+
+  .node-sub {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    fill: var(--ink-dim);
+  }
+
+  .arrow-label {
+    font-family: "Public Sans", system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    fill: var(--ink-dim);
+  }
+
+  .zone-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .gate-label {
+    font-family: "Public Sans", system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    fill: var(--ink);
+  }
+
+  figcaption {
+    font-family: "Public Sans", system-ui, sans-serif;
+    font-size: 14px;
+    color: var(--ink-dim);
+    max-width: 68ch;
+    line-height: 1.6;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--hairline);
+  }
+
+  figcaption strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+</style>
+
+<div class="card">
+  <p class="eyebrow">Spendly · request pipeline</p>
+  <h1>The backend decides everything. The LLM only <em>explains</em> it.</h1>
+
+  <figure>
+    <div class="diagram-scroll">
+      <svg viewBox="0 0 1220 400" role="img" aria-label="Diagram showing a product page's details flowing through Spendly's extension into a deterministic backend pipeline that computes the match, savings and recommendation, then across a one-way gate into Gemini, which only writes a prose explanation — no arrow returns from Gemini into the decision, meaning it can never change a number.">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor" />
+          </marker>
+        </defs>
+
+        <!-- Product page -->
+        <rect x="10" y="150" width="150" height="80" rx="10" fill="var(--panel)" stroke="var(--hairline)" stroke-width="1.5" />
+        <text x="85" y="184" text-anchor="middle" class="node-label">Product page</text>
+        <text x="85" y="205" text-anchor="middle" class="node-sub">amazon.com/dp/…</text>
+
+        <line x1="160" y1="190" x2="196" y2="190" stroke="var(--ink-dim)" stroke-width="1.5" marker-end="url(#arrow)" />
+        <text x="178" y="176" text-anchor="middle" class="arrow-label">opens</text>
+
+        <!-- Extension -->
+        <rect x="200" y="150" width="150" height="80" rx="10" fill="var(--panel)" stroke="var(--hairline)" stroke-width="1.5" />
+        <text x="275" y="184" text-anchor="middle" class="node-label">Extension</text>
+        <text x="275" y="205" text-anchor="middle" class="node-sub">reads name, price, brand</text>
+
+        <line x1="350" y1="190" x2="386" y2="190" stroke="var(--ink-dim)" stroke-width="1.5" marker-end="url(#arrow)" />
+        <text x="368" y="176" text-anchor="middle" class="arrow-label">sends product</text>
+
+        <!-- Deterministic zone -->
+        <rect x="390" y="100" width="360" height="200" rx="12" fill="none" stroke="var(--deterministic)" stroke-width="1.5" stroke-dasharray="5 4" />
+        <text x="410" y="122" class="zone-label" fill="var(--deterministic)">Backend — deterministic</text>
+
+        <rect x="410" y="150" width="150" height="80" rx="10" fill="var(--panel)" stroke="var(--deterministic-dim)" stroke-width="1.5" />
+        <text x="485" y="180" text-anchor="middle" class="node-label">Match &amp; price</text>
+        <text x="485" y="199" text-anchor="middle" class="node-sub">match: EXACT</text>
+        <text x="485" y="213" text-anchor="middle" class="node-sub">savings: Rs. 700</text>
+
+        <line x1="560" y1="190" x2="586" y2="190" stroke="var(--ink-dim)" stroke-width="1.5" marker-end="url(#arrow)" />
+
+        <rect x="590" y="150" width="150" height="80" rx="10" fill="var(--panel)" stroke="var(--deterministic-dim)" stroke-width="1.5" />
+        <text x="665" y="180" text-anchor="middle" class="node-label">Decide</text>
+        <text x="665" y="199" text-anchor="middle" class="node-sub">rec: BUY</text>
+        <text x="665" y="213" text-anchor="middle" class="node-sub">confidence: 0.91</text>
+
+        <!-- Gate -->
+        <line x1="785" y1="95" x2="785" y2="305" stroke="var(--ink-dim)" stroke-width="1.5" stroke-dasharray="2 5" />
+        <circle cx="785" cy="190" r="13" fill="var(--bg)" stroke="var(--ink)" stroke-width="1.5" />
+        <text x="785" y="195" text-anchor="middle" font-size="14" fill="var(--ink)">&#8594;</text>
+        <text x="785" y="330" text-anchor="middle" class="gate-label">facts cross once —</text>
+        <text x="785" y="348" text-anchor="middle" class="gate-label">nothing computed comes back</text>
+
+        <line x1="750" y1="190" x2="778" y2="190" stroke="var(--ink-dim)" stroke-width="1.5" />
+        <line x1="793" y1="190" x2="820" y2="190" stroke="var(--ink-dim)" stroke-width="1.5" marker-end="url(#arrow)" />
+
+        <!-- Generative zone -->
+        <rect x="824" y="100" width="200" height="200" rx="12" fill="none" stroke="var(--generative)" stroke-width="1.5" stroke-dasharray="5 4" />
+        <text x="844" y="122" class="zone-label" fill="var(--generative)">Gemini — generative</text>
+
+        <rect x="844" y="150" width="160" height="80" rx="10" fill="var(--panel)" stroke="var(--generative-dim)" stroke-width="1.5" />
+        <text x="924" y="184" text-anchor="middle" class="node-label">Writes prose</text>
+        <text x="924" y="205" text-anchor="middle" class="node-sub">no numeric output</text>
+
+        <line x1="1024" y1="190" x2="1060" y2="190" stroke="var(--ink-dim)" stroke-width="1.5" marker-end="url(#arrow)" />
+        <text x="1042" y="176" text-anchor="middle" class="arrow-label">returns text</text>
+
+        <!-- Result -->
+        <rect x="1064" y="150" width="146" height="80" rx="10" fill="var(--panel)" stroke="var(--hairline)" stroke-width="1.5" />
+        <text x="1137" y="178" text-anchor="middle" class="node-label">Shown to you</text>
+        <text x="1137" y="198" text-anchor="middle" class="node-sub" font-size="10">“Save Rs. 700 —</text>
+        <text x="1137" y="211" text-anchor="middle" class="node-sub" font-size="10">buy at StyleHub.”</text>
+      </svg>
+    </div>
+    <figcaption>
+      Every number here — the match, the savings, the recommendation — is computed by the backend before Gemini is ever called. <strong>The gate only lets facts through in one direction</strong>: Gemini can turn them into a sentence, but has no path back into the decision. If it's unavailable, a templated fallback writes the same sentence from the same facts.
+    </figcaption>
+  </figure>
+</div>
