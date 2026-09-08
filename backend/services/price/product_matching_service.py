@@ -25,10 +25,19 @@ def _compact(text: str) -> str:
 
 
 def _title_similarity(a: str, b: str) -> float:
+    """Overlap coefficient (intersection over the *smaller* token set)
+    rather than Jaccard (intersection over the union). A short, precise
+    catalog name ("iPhone 15 Case") compared against a real, keyword-heavy
+    marketplace title ("OtterBox iPhone 17e, 16e, 15... Commuter Series
+    Case - Black, Tough, ...") shares every one of its tokens with the
+    listing, but Jaccard buries that in the listing's huge vocabulary and
+    scores it near zero. The overlap coefficient asks the right question
+    instead: does the catalog name's content appear in this listing?
+    """
     tokens_a, tokens_b = _tokens(a), _tokens(b)
     if not tokens_a or not tokens_b:
         return 0.0
-    return len(tokens_a & tokens_b) / len(tokens_a | tokens_b)
+    return len(tokens_a & tokens_b) / min(len(tokens_a), len(tokens_b))
 
 
 def _attribute_similarity(a: dict[str, str], b: dict[str, str]) -> tuple[float, bool]:
